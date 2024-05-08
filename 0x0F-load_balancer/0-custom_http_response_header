@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Configuring web-001 to have an HTTP response header
+# Configuring web-01 to have an HTTP response header
 
 # Updating Packages before performing installations
 sudo apt-get update
