@@ -1,19 +1,37 @@
 #!/usr/bin/env bash
-# Shows information about subdomains.
+# This script displays information about subdomains
 
-domain_information() {
-    local domain="$1"
-    local subdomain="$2"
-    local line
-    line=$(dig "$subdomain"."$domain" | awk '/ANSWER SECTION:/ {getline; print; getline; print}')
-    echo "$subdomain $line" | awk '{printf "The subdomain %s is a %s record and points to %s\n", $1, $2, $3}'
+domain=$1
+subdomain=$2
+result=
+
+# print the information about the result returned
+print_domain_info() {
+    record_type=$(echo "$result" | awk '{print $4}')
+    ip_addr=$(echo "$result" | awk '{print $5}')
+    echo -n "The subdomain $subdomain is a $record_type record and points "
+    echo "to $ip_addr"
 }
 
-if [ "$#" -eq 1 ]; then
-    domain_information "$1" "www"
-    domain_information "$1" "lb-01"
-    domain_information "$1" "web-01"
-    domain_information "$1" "web-02"
-elif [ "$#" -eq 2 ]; then
-    domain_information "$1" "$2"
-fi
+# get information about the subdomains
+get_domain_info () {
+    if [[ $domain = "" ]]; then
+        echo "Domain name missing."
+        exit 1
+    fi
+    
+    if [[ $subdomain = "" ]]; then
+        known_sub_domains=("www" "lb-01" "web-01" "web-02")
+        for subdomain in "${known_sub_domains[@]}"; do
+            result=$(dig "$subdomain.$domain" | grep -A1 'ANSWER SECTION'\
+                    | tail -1)
+            print_domain_info
+        done
+        exit
+    fi
+
+    result=$(dig "$subdomain.$domain" | grep -A1 'ANSWER SECTION' | tail -1)
+    print_domain_info
+}
+
+get_domain_info
