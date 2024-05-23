@@ -41,5 +41,5 @@ frontend mkiyaga_frontend
 
 backend mkiyaga_backend
     balance roundrobin
-    server 530902-web-01 web-01.mkiyaga.tech:80 check
-    server 530902-web-02 web-02.mkiyaga.tech:80 check
+    server 530902-web-01 52.201.161.47:80 check
+    server 530902-web-02 100.25.144.160:80 check
